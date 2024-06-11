@@ -101,7 +101,9 @@ lint.select = [
     "I",       # isort
     "PGH004",  # pygrep-hooks - Use specific rule codes when using noqa
     "PIE",     # flake8-pie
+    "PLC",     # pylint convention
     "PLE",     # pylint error
+    "PLR",     # pylint refactor
     "PLR1714", # Consider merging multiple comparisons
     "PLW",     # pylint warning
     "PYI",     # flake8-pyi
@@ -138,6 +140,16 @@ lint.ignore = [
     # what we're doing when we use type(..) is ...
     "E721", # Do not compare types, use `isinstance()`
     # pylint ignore
+    "PLC0105", # `TypeVar` name "E" does not reflect its covariance;
+    "PLC0414", # Import alias does not rename original package
+    "PLR0124", # Name compared with itself
+    "PLR0133", # Two constants compared in a comparison
+    "PLR0402", # Use `from x.y import z` in lieu of alias
+    "PLR0911", # Too many return statements
+    "PLR0912", # Too many branches
+    "PLR0913", # Too many arguments in function definition
+    "PLR0915", # Too many statements
+    "PLR2004", # Magic value used in comparison
     "PLR5501", # Use `elif` instead of `else` then `if`
     "PLW0120", # remove the else and dedent its contents
     "PLW0603", # Using the global statement
@@ -182,7 +194,7 @@ disable = [
     "broad-exception-caught",
     "broad-exception-raised",
     "cell-var-from-loop",                     # B023 from ruff / flake8-bugbear
-    "comparison-of-constants",
+    "comparison-of-constants",                # Lots of those in tests
     "comparison-with-callable",
     "comparison-with-itself",
     "condition-evals-to-constant",
@@ -222,9 +234,9 @@ disable = [
     "no-self-argument",
     "not-an-iterable",
     "not-callable",
-    "pointless-exception-statement",
-    "pointless-statement",
-    "pointless-string-statement",
+    "pointless-exception-statement",          # https://github.com/pytest-dev/pytest/pull/12379
+    "pointless-statement",                    # https://github.com/pytest-dev/pytest/pull/12379
+    "pointless-string-statement",             # https://github.com/pytest-dev/pytest/pull/12379
     "possibly-used-before-assignment",
     "protected-access",
     "raise-missing-from",
