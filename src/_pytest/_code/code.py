@@ -435,23 +435,23 @@ class Traceback(List[TracebackEntry]):
         return None
 
 
-E = TypeVar("E", bound=BaseException, covariant=True)
+E_co = TypeVar("E_co", bound=BaseException, covariant=True)
 
 
 @final
 @dataclasses.dataclass
-class ExceptionInfo(Generic[E]):
+class ExceptionInfo(Generic[E_co]):
     """Wraps sys.exc_info() objects and offers help for navigating the traceback."""
 
     _assert_start_repr: ClassVar = "AssertionError('assert "
 
-    _excinfo: Optional[Tuple[Type["E"], "E", TracebackType]]
+    _excinfo: Optional[Tuple[Type["E_co"], "E_co", TracebackType]]
     _striptext: str
     _traceback: Optional[Traceback]
 
     def __init__(
         self,
-        excinfo: Optional[Tuple[Type["E"], "E", TracebackType]],
+        excinfo: Optional[Tuple[Type["E_co"], "E_co", TracebackType]],
         striptext: str = "",
         traceback: Optional[Traceback] = None,
         *,
@@ -468,9 +468,9 @@ class ExceptionInfo(Generic[E]):
         # Ignoring error: "Cannot use a covariant type variable as a parameter".
         # This is OK to ignore because this class is (conceptually) readonly.
         # See https://github.com/python/mypy/issues/7049.
-        exception: E,  # type: ignore[misc]
+        exception: E_co,  # type: ignore[misc]
         exprinfo: Optional[str] = None,
-    ) -> "ExceptionInfo[E]":
+    ) -> "ExceptionInfo[E_co]":
         """Return an ExceptionInfo for an existing exception.
 
         The exception must have a non-``None`` ``__traceback__`` attribute,
@@ -495,9 +495,9 @@ class ExceptionInfo(Generic[E]):
     @classmethod
     def from_exc_info(
         cls,
-        exc_info: Tuple[Type[E], E, TracebackType],
+        exc_info: Tuple[Type[E_co], E_co, TracebackType],
         exprinfo: Optional[str] = None,
-    ) -> "ExceptionInfo[E]":
+    ) -> "ExceptionInfo[E_co]":
         """Like :func:`from_exception`, but using old-style exc_info tuple."""
         _striptext = ""
         if exprinfo is None and isinstance(exc_info[1], AssertionError):
@@ -532,17 +532,17 @@ class ExceptionInfo(Generic[E]):
         return ExceptionInfo.from_exc_info(exc_info, exprinfo)
 
     @classmethod
-    def for_later(cls) -> "ExceptionInfo[E]":
+    def for_later(cls) -> "ExceptionInfo[E_co]":
         """Return an unfilled ExceptionInfo."""
         return cls(None, _ispytest=True)
 
-    def fill_unfilled(self, exc_info: Tuple[Type[E], E, TracebackType]) -> None:
+    def fill_unfilled(self, exc_info: Tuple[Type[E_co], E_co, TracebackType]) -> None:
         """Fill an unfilled ExceptionInfo created with ``for_later()``."""
         assert self._excinfo is None, "ExceptionInfo was already filled"
         self._excinfo = exc_info
 
     @property
-    def type(self) -> Type[E]:
+    def type(self) -> Type[E_co]:
         """The exception class."""
         assert (
             self._excinfo is not None
@@ -550,7 +550,7 @@ class ExceptionInfo(Generic[E]):
         return self._excinfo[0]
 
     @property
-    def value(self) -> E:
+    def value(self) -> E_co:
         """The exception value."""
         assert (
             self._excinfo is not None

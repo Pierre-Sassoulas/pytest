@@ -268,15 +268,15 @@ def check_interactive_exception(call: "CallInfo[object]", report: BaseReport) ->
     return True
 
 
-TResult = TypeVar("TResult", covariant=True)
+TResult_co = TypeVar("TResult_co", covariant=True)
 
 
 @final
 @dataclasses.dataclass
-class CallInfo(Generic[TResult]):
+class CallInfo(Generic[TResult_co]):
     """Result/Exception info of a function invocation."""
 
-    _result: Optional[TResult]
+    _result: Optional[TResult_co]
     #: The captured exception of the call, if it raised.
     excinfo: Optional[ExceptionInfo[BaseException]]
     #: The system time when the call started, in seconds since the epoch.
@@ -290,7 +290,7 @@ class CallInfo(Generic[TResult]):
 
     def __init__(
         self,
-        result: Optional[TResult],
+        result: Optional[TResult_co],
         excinfo: Optional[ExceptionInfo[BaseException]],
         start: float,
         stop: float,
@@ -308,7 +308,7 @@ class CallInfo(Generic[TResult]):
         self.when = when
 
     @property
-    def result(self) -> TResult:
+    def result(self) -> TResult_co:
         """The return value of the call, if it didn't raise.
 
         Can only be accessed if excinfo is None.
@@ -318,17 +318,17 @@ class CallInfo(Generic[TResult]):
         # The cast is safe because an exception wasn't raised, hence
         # _result has the expected function return type (which may be
         #  None, that's why a cast and not an assert).
-        return cast(TResult, self._result)
+        return cast(TResult_co, self._result)
 
     @classmethod
     def from_call(
         cls,
-        func: Callable[[], TResult],
+        func: Callable[[], TResult_co],
         when: Literal["collect", "setup", "call", "teardown"],
         reraise: Optional[
             Union[Type[BaseException], Tuple[Type[BaseException], ...]]
         ] = None,
-    ) -> "CallInfo[TResult]":
+    ) -> "CallInfo[TResult_co]":
         """Call func, wrapping the result in a CallInfo.
 
         :param func:
@@ -343,7 +343,7 @@ class CallInfo(Generic[TResult]):
         start = timing.time()
         precise_start = timing.perf_counter()
         try:
-            result: Optional[TResult] = func()
+            result: Optional[TResult_co] = func()
         except BaseException:
             excinfo = ExceptionInfo.from_current()
             if reraise is not None and isinstance(excinfo.value, reraise):
