@@ -261,7 +261,7 @@ class TestInlineRunModulesCleanup:
         spy = spy_factory.instances[0]
         assert spy._spy_restore_count == 1
         assert sys.modules == original
-        assert all(sys.modules[x] is original[x] for x in sys.modules)
+        assert all(y is original[x] for x, y in sys.modules.items())
 
     def test_inline_run_sys_modules_snapshot_restore_preserving_modules(
         self, pytester: Pytester, monkeypatch: MonkeyPatch

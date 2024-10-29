@@ -140,9 +140,9 @@ class _NodeReporter:
         # Filter out attributes not permitted by this test family.
         # Including custom attributes because they are not valid here.
         temp_attrs = {}
-        for key in self.attrs:
+        for key, value in self.attrs.items():
             if key in families[self.family]["testcase"]:
-                temp_attrs[key] = self.attrs[key]
+                temp_attrs[key] = value
         self.attrs = temp_attrs
 
     def to_xml(self) -> ET.Element:
