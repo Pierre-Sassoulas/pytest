@@ -215,7 +215,7 @@ disable = [
     "consider-using-assignment-expr",
     "consider-using-from-import",
     "consider-using-f-string",
-    "consider-using-in",
+    "consider-using-in",                      # PLR1714 from ruff
     "consider-using-namedtuple-or-dataclass",
     "consider-using-ternary",
     "consider-using-tuple",
@@ -318,7 +318,6 @@ disable = [
     "unused-import",
     "unused-variable",
     "used-before-assignment",
-    "use-dict-literal",
     "use-implicit-booleaness-not-comparison",
     "use-implicit-booleaness-not-len",
     "use-set-for-membership",
