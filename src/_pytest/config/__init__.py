@@ -499,11 +499,7 @@ class PytestPluginManager(PluginManager):
         plugin_name = super().register(plugin, name)
         if plugin_name is not None:
             self.hook.pytest_plugin_registered.call_historic(
-                kwargs=dict(
-                    plugin=plugin,
-                    plugin_name=plugin_name,
-                    manager=self,
-                )
+                kwargs={"plugin": plugin, "plugin_name": plugin_name, "manager": self}
             )
 
             if isinstance(plugin, types.ModuleType):
@@ -1080,7 +1076,7 @@ class Config:
         self.pluginmanager.register(self, "pytestconfig")
         self._configured = False
         self.hook.pytest_addoption.call_historic(
-            kwargs=dict(parser=self._parser, pluginmanager=self.pluginmanager)
+            kwargs={"parser": self._parser, "pluginmanager": self.pluginmanager}
         )
         self.args_source = Config.ArgsSource.ARGS
         self.args: list[str] = []
@@ -1112,7 +1108,7 @@ class Config:
     def _do_configure(self) -> None:
         assert not self._configured
         self._configured = True
-        self.hook.pytest_configure.call_historic(kwargs=dict(config=self))
+        self.hook.pytest_configure.call_historic(kwargs={"config": self})
 
     def _ensure_unconfigure(self) -> None:
         try:
@@ -1507,7 +1503,7 @@ class Config:
             "can only parse cmdline args at most once per Config object"
         )
         self.hook.pytest_addhooks.call_historic(
-            kwargs=dict(pluginmanager=self.pluginmanager)
+            kwargs={"pluginmanager": self.pluginmanager}
         )
         self._preparse(args, addopts=addopts)
         self._parser.after_preparse = True  # type: ignore
@@ -1553,12 +1549,12 @@ class Config:
             frame = sys._getframe(stacklevel - 1)
             location = frame.f_code.co_filename, frame.f_lineno, frame.f_code.co_name
             self.hook.pytest_warning_recorded.call_historic(
-                kwargs=dict(
-                    warning_message=records[0],
-                    when="config",
-                    nodeid="",
-                    location=location,
-                )
+                kwargs={
+                    "warning_message": records[0],
+                    "when": "config",
+                    "nodeid": "",
+                    "location": location,
+                }
             )
 
     def addinivalue_line(self, name: str, line: str) -> None:
