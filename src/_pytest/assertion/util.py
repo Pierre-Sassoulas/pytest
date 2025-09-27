@@ -233,36 +233,31 @@ def assertrepr_compare(
 def _compare_eq_any(
     left: Any, right: Any, highlighter: _HighlightFunc, verbose: int = 0
 ) -> list[str]:
-    explanation = []
-    if istext(left) and istext(right):
-        explanation = _diff_text(left, right, highlighter, verbose)
-    else:
-        from _pytest.python_api import ApproxBase
+    match (left, right):
+        case (str(), str()):
+            return _diff_text(left, right, highlighter, verbose)
+        case _:
+            from _pytest.python_api import ApproxBase
 
-        if isinstance(left, ApproxBase) or isinstance(right, ApproxBase):
-            # Although the common order should be obtained == expected, this ensures both ways
-            approx_side = left if isinstance(left, ApproxBase) else right
-            other_side = right if isinstance(left, ApproxBase) else left
+            explanation: list[str] = []
+            if isinstance(left, ApproxBase) or isinstance(right, ApproxBase):
+                approx_side = left if isinstance(left, ApproxBase) else right
+                other_side = right if isinstance(left, ApproxBase) else left
+                explanation = approx_side._repr_compare(other_side)
+            elif type(left) is type(right) and (
+                isdatacls(left) or isattrs(left) or isnamedtuple(left)
+            ):
+                explanation = _compare_eq_cls(left, right, highlighter, verbose)
+            elif issequence(left) and issequence(right):
+                explanation = _compare_eq_sequence(left, right, highlighter, verbose)
+            elif isdict(left) and isdict(right):
+                explanation = _compare_eq_dict(left, right, highlighter, verbose)
 
-            explanation = approx_side._repr_compare(other_side)
-        elif type(left) is type(right) and (
-            isdatacls(left) or isattrs(left) or isnamedtuple(left)
-        ):
-            # Note: unlike dataclasses/attrs, namedtuples compare only the
-            # field values, not the type or field names. But this branch
-            # intentionally only handles the same-type case, which was often
-            # used in older code bases before dataclasses/attrs were available.
-            explanation = _compare_eq_cls(left, right, highlighter, verbose)
-        elif issequence(left) and issequence(right):
-            explanation = _compare_eq_sequence(left, right, highlighter, verbose)
-        elif isdict(left) and isdict(right):
-            explanation = _compare_eq_dict(left, right, highlighter, verbose)
+            if isiterable(left) and isiterable(right):
+                expl = _compare_eq_iterable(left, right, highlighter, verbose)
+                explanation.extend(expl)
 
-        if isiterable(left) and isiterable(right):
-            expl = _compare_eq_iterable(left, right, highlighter, verbose)
-            explanation.extend(expl)
-
-    return explanation
+            return explanation
 
 
 def _diff_text(
