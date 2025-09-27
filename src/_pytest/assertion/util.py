@@ -236,7 +236,6 @@ def _compare_eq_any(
     from _pytest.python_api import ApproxBase
 
     explanation: list[str] = []
-
     match (left, right):
         case (str(), str()):
             return _diff_text(left, right, highlighter, verbose)
@@ -244,15 +243,19 @@ def _compare_eq_any(
             explanation = approx_side._repr_compare(left)
         case (ApproxBase() as approx_side, _):
             explanation = approx_side._repr_compare(right)
+        case (tuple(), _) if getattr(left, "_fields", None) is not None:
+            explanation = _compare_eq_cls(left, right, highlighter, verbose)
+        case (Sequence(), Sequence()):
+            explanation = _compare_eq_sequence(left, right, highlighter, verbose)
+        case (dict(), dict()):
+            explanation = _compare_eq_dict(left, right, highlighter, verbose)
+        case _ if type(left) is type(right) and (
+            getattr(left, "__dataclass_fields__", None) is not None
+            or getattr(left, "__attrs_attrs__", None) is not None
+        ):
+            explanation = _compare_eq_cls(left, right, highlighter, verbose)
         case _:
-            if type(left) is type(right) and (
-                isdatacls(left) or isattrs(left) or isnamedtuple(left)
-            ):
-                explanation = _compare_eq_cls(left, right, highlighter, verbose)
-            elif issequence(left) and issequence(right):
-                explanation = _compare_eq_sequence(left, right, highlighter, verbose)
-            elif isdict(left) and isdict(right):
-                explanation = _compare_eq_dict(left, right, highlighter, verbose)
+            explanation = []
 
     if isiterable(left) and isiterable(right):
         expl = _compare_eq_iterable(left, right, highlighter, verbose)
