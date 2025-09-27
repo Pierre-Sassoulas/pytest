@@ -86,9 +86,7 @@ SetComparisonFunction = dict[
 ]
 
 SET_COMPARISON_FUNCTIONS: SetComparisonFunction = {
-    # == can't be done here without a prior refactor because there's an additional
-    # explanation for iterable in _compare_eq_any
-    # "==": _compare_eq_set,
+    "==": _compare_eq_set,
     "!=": lambda *a, **kw: ["Both sets are equal"],
     ">=": _compare_gte_set,
     "<=": _compare_lte_set,
