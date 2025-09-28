@@ -126,10 +126,6 @@ def isdict(x: Any) -> bool:
     return isinstance(x, dict)
 
 
-def isset(x: Any) -> bool:
-    return isinstance(x, set | frozenset)
-
-
 def isnamedtuple(obj: Any) -> bool:
     return isinstance(obj, tuple) and getattr(obj, "_fields", None) is not None
 
@@ -203,18 +199,18 @@ def assertrepr_compare(
     explanation: list[str] | None
     try:
         match (left, op, right):
-            case (_, "==", _):
-                explanation = _compare_eq_any(left, right, highlighter, verbose)
-            case (str(), "not in", str()):
-                explanation = _notin_text(left, right, verbose)
             case (
                 set() | frozenset(),
-                "!=" | ">=" | "<=" | ">" | "<",
+                "==" | "!=" | ">=" | "<=" | ">" | "<",
                 set() | frozenset(),
             ):
                 explanation = SET_COMPARISON_FUNCTIONS[op](
                     left, right, highlighter, verbose
                 )
+            case (_, "==", _):
+                explanation = _compare_eq_any(left, right, highlighter, verbose)
+            case (str(), "not in", str()):
+                explanation = _notin_text(left, right, verbose)
             case _:
                 explanation = None
     except outcomes.Exit:
@@ -259,8 +255,6 @@ def _compare_eq_any(
             explanation = _compare_eq_cls(left, right, highlighter, verbose)
         elif issequence(left) and issequence(right):
             explanation = _compare_eq_sequence(left, right, highlighter, verbose)
-        elif isset(left) and isset(right):
-            explanation = _compare_eq_set(left, right, highlighter, verbose)
         elif isdict(left) and isdict(right):
             explanation = _compare_eq_dict(left, right, highlighter, verbose)
 
