@@ -1,8 +1,9 @@
 from __future__ import annotations
 
+from typing import Literal
+
 from _pytest._io.saferepr import saferepr
 from _pytest.assertion._compare_eq import _diff_text
-from _pytest.assertion.util import dummy_highlighter
 
 
 def _notin_text(term: str, text: str, verbose: int = 0) -> list[str]:
@@ -22,3 +23,11 @@ def _notin_text(term: str, text: str, verbose: int = 0) -> list[str]:
         else:
             newdiff.append(line)
     return newdiff
+
+
+def dummy_highlighter(source: str, lexer: Literal["diff", "python"] = "python") -> str:
+    """Dummy highlighter that returns the text unprocessed.
+
+    Needed for _notin_text, as the diff gets post-processed to only show the "+" part.
+    """
+    return source
