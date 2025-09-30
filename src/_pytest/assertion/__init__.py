@@ -3,15 +3,25 @@
 
 from __future__ import annotations
 
+
+__all__ = ["_diff_text", "assertrepr_compare", "format_explanation"]
+
+from collections.abc import Callable
 from collections.abc import Generator
+import os
 import sys
 from typing import Any
+from typing import Literal
 from typing import Protocol
 from typing import TYPE_CHECKING
 
 from _pytest.assertion import rewrite
 from _pytest.assertion import truncate
 from _pytest.assertion import util
+from _pytest.assertion._compare_eq import _diff_text
+import _pytest.assertion._typing
+from _pytest.assertion.assertrepr_compare import assertrepr_compare
+from _pytest.assertion.format_explanation import format_explanation
 from _pytest.assertion.rewrite import assertstate_key
 from _pytest.config import Config
 from _pytest.config import hookimpl
@@ -177,22 +187,28 @@ def pytest_runtest_protocol(item: Item) -> Generator[None, object, object]:
                 return res
         return None
 
-    saved_assert_hooks = util._reprcompare, util._assertion_pass
-    util._reprcompare = callbinrepr
-    util._config = item.config
+    saved_assert_hooks = (
+        _pytest.assertion._typing._reprcompare,
+        _pytest.assertion._typing._assertion_pass,
+    )
+    _pytest.assertion._typing._reprcompare = callbinrepr
+    _pytest.assertion._typing._config = item.config
 
     if ihook.pytest_assertion_pass.get_hookimpls():
 
         def call_assertion_pass_hook(lineno: int, orig: str, expl: str) -> None:
             ihook.pytest_assertion_pass(item=item, lineno=lineno, orig=orig, expl=expl)
 
-        util._assertion_pass = call_assertion_pass_hook
+        _pytest.assertion._typing._assertion_pass = call_assertion_pass_hook
 
     try:
         return (yield)
     finally:
-        util._reprcompare, util._assertion_pass = saved_assert_hooks
-        util._config = None
+        (
+            _pytest.assertion._typing._reprcompare,
+            _pytest.assertion._typing._assertion_pass,
+        ) = saved_assert_hooks
+        _pytest.assertion._typing._config = None
 
 
 def pytest_sessionfinish(session: Session) -> None:

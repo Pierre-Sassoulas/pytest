@@ -26,6 +26,8 @@ import types
 from typing import IO
 from typing import TYPE_CHECKING
 
+import _pytest.assertion._typing
+
 
 if sys.version_info >= (3, 12):
     from importlib.resources.abc import TraversableResources
@@ -41,7 +43,6 @@ from _pytest._io.saferepr import DEFAULT_REPR_MAX_SIZE
 from _pytest._io.saferepr import saferepr
 from _pytest._io.saferepr import saferepr_unlimited
 from _pytest._version import version
-from _pytest.assertion import util
 from _pytest.config import Config
 from _pytest.fixtures import FixtureFunctionDefinition
 from _pytest.main import Session
@@ -433,7 +434,7 @@ def _saferepr(obj: object) -> str:
         # for bound methods, skip redundant <bound method ...> information
         return obj.__name__
 
-    maxsize = _get_maxsize_for_saferepr(util._config)
+    maxsize = _get_maxsize_for_saferepr(_pytest.assertion._typing._config)
     if not maxsize:
         return saferepr_unlimited(obj).replace("\n", "\\n")
     return saferepr(obj, maxsize=maxsize).replace("\n", "\\n")
@@ -465,7 +466,9 @@ def _format_assertmsg(obj: object) -> str:
     # However in either case we want to preserve the newline.
     replaces = [("\n", "\n~"), ("%", "%%")]
     if not isinstance(obj, str):
-        obj = saferepr(obj, _get_maxsize_for_saferepr(util._config))
+        obj = saferepr(
+            obj, _get_maxsize_for_saferepr(_pytest.assertion._typing._config)
+        )
         replaces.append(("\\n", "\n~"))
 
     for r1, r2 in replaces:
@@ -503,22 +506,24 @@ def _call_reprcompare(
             done = True
         if done:
             break
-    if util._reprcompare is not None:
-        custom = util._reprcompare(ops[i], each_obj[i], each_obj[i + 1])
+    if _pytest.assertion._typing._reprcompare is not None:
+        custom = _pytest.assertion._typing._reprcompare(
+            ops[i], each_obj[i], each_obj[i + 1]
+        )
         if custom is not None:
             return custom
     return expl
 
 
 def _call_assertion_pass(lineno: int, orig: str, expl: str) -> None:
-    if util._assertion_pass is not None:
-        util._assertion_pass(lineno, orig, expl)
+    if _pytest.assertion._typing._assertion_pass is not None:
+        _pytest.assertion._typing._assertion_pass(lineno, orig, expl)
 
 
 def _check_if_assertion_pass_impl() -> bool:
     """Check if any plugins implement the pytest_assertion_pass hook
     in order not to generate explanation unnecessarily (might be expensive)."""
-    return True if util._assertion_pass else False
+    return True if _pytest.assertion._typing._assertion_pass else False
 
 
 UNARY_MAP = {ast.Not: "not %s", ast.Invert: "~%s", ast.USub: "-%s", ast.UAdd: "+%s"}
