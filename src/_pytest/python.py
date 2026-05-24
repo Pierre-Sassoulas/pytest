@@ -1037,22 +1037,22 @@ class IdMaker:
     def _idval_from_value(self, val: object) -> str | None:
         """Try to make an ID for a parameter in a ParameterSet from its value,
         if the value type is supported."""
-        if isinstance(val, str | bytes):
-            return _ascii_escaped_by_config(val, self.config)
-        elif val is None or isinstance(val, float | int | bool | complex):
-            return str(val)
-        elif isinstance(val, re.Pattern):
-            return ascii_escaped(val.pattern)
-        elif val is NOTSET:
-            # Fallback to default. Note that NOTSET is an enum.Enum.
-            pass
-        elif isinstance(val, enum.Enum):
-            return str(val)
-        elif isinstance(getattr(val, "__name__", None), str):
-            # Name of a class, function, module, etc.
-            name: str = getattr(val, "__name__")
-            return name
-        return None
+        match val:
+            case str() | bytes():
+                return _ascii_escaped_by_config(val, self.config)
+            case _ if val is NOTSET:
+                # Fallback to default. Note that NOTSET is an enum.Enum, so
+                # it must be checked before the enum.Enum() pattern below.
+                return None
+            case None | float() | int() | bool() | complex() | enum.Enum():
+                return str(val)
+            case re.Pattern(pattern=pattern):
+                return ascii_escaped(pattern)
+            case object(__name__=str() as name):
+                # Name of a class, function, module, etc.
+                return name
+            case _:
+                return None
 
     def _idval_from_value_required(self, val: object, idx: int) -> str:
         """Like _idval_from_value(), but fails if the type is not supported."""
