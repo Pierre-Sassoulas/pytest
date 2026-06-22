@@ -1,9 +1,12 @@
 from __future__ import annotations
 
+from collections.abc import Collection
 from collections.abc import Iterator
 from collections.abc import Mapping
+import heapq
 import pprint
 
+from _pytest._io.pprint import _safe_key
 from _pytest._io.saferepr import saferepr
 from _pytest.assertion._typing import _HighlightFunc
 
@@ -13,6 +16,7 @@ def _compare_eq_mapping(
     right: Mapping[object, object],
     highlighter: _HighlightFunc,
     verbose: int = 0,
+    extra_items_max_lines: int | None = None,
 ) -> Iterator[str]:
     set_left = set(left)
     set_right = set(right)
@@ -36,13 +40,40 @@ def _compare_eq_mapping(
     len_extra_left = len(extra_left)
     if len_extra_left:
         yield f"Left contains {len_extra_left} more item{'' if len_extra_left == 1 else 's'}:"
-        yield from highlighter(
-            pprint.pformat({k: left[k] for k in extra_left})
-        ).splitlines()
+        yield from _format_extra_items(
+            left, extra_left, highlighter, extra_items_max_lines
+        )
     extra_right = set_right - set_left
     len_extra_right = len(extra_right)
     if len_extra_right:
         yield f"Right contains {len_extra_right} more item{'' if len_extra_right == 1 else 's'}:"
+        yield from _format_extra_items(
+            right, extra_right, highlighter, extra_items_max_lines
+        )
+
+
+def _format_extra_items(
+    mapping: Mapping[object, object],
+    keys: Collection[object],
+    highlighter: _HighlightFunc,
+    max_lines: int | None,
+) -> Iterator[str]:
+    """Render the "X contains N more items" subdict.
+
+    Small (or untruncated, ``max_lines is None``) output keeps the compact,
+    key-sorted ``pprint`` block. When there are more extra keys than the
+    truncation budget, ``pprint.pformat`` would format the whole subdict
+    just to have all but the first few lines dropped by truncation; the
+    item count is already reported in the header, so instead emit only the
+    smallest ``max_lines`` keys, one per line — deterministic via the same
+    safe sort ``pprint`` uses, char-bounded via ``saferepr``. The keys
+    shown are the ones ``pprint`` would have led with; only the dropped
+    tail differs, and that tail was going to be truncated anyway.
+    """
+    if max_lines is None or len(keys) <= max_lines:
         yield from highlighter(
-            pprint.pformat({k: right[k] for k in extra_right})
+            pprint.pformat({k: mapping[k] for k in keys})
         ).splitlines()
+        return
+    for k in heapq.nsmallest(max_lines, keys, key=_safe_key):
+        yield highlighter(saferepr({k: mapping[k]}))

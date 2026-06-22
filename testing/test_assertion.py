@@ -56,6 +56,11 @@ def mock_config(
         def getini(self, name: str) -> str:
             if name == util.ASSERTION_TEXT_DIFF_STYLE_INI:
                 return assertion_text_diff_style
+            # Disable truncation so ``callop``-style tests can compare
+            # against the full explanation; the extra-items cap is keyed off
+            # the same budget and is covered by its own dedicated tests.
+            if name in ("truncation_limit_lines", "truncation_limit_chars"):
+                return "0"
             raise KeyError(f"Not mocked out: {name}")
 
     return Config()
@@ -933,6 +938,85 @@ class TestAssert_reprcompare:
             "{'c': 2}",
             "Use -v to get more diff",
         ]
+
+    def test_mapping_extra_items_capped_keeps_count_in_header(self) -> None:
+        # When there are more extra keys than the truncation budget, the
+        # "N more items" subdict is not pretty-printed in full (that work
+        # would be thrown away by truncation); only the smallest budget
+        # keys are emitted, one per line. The count stays in the header, so
+        # no information the user would have seen is lost.
+        from _pytest.assertion._compare_mapping import _compare_eq_mapping
+
+        left = {i: i for i in range(2000)}
+        capped = list(_compare_eq_mapping(left, {}, util.dummy_highlighter, 0, 8))
+        # Header reports the true count regardless of the cap.
+        assert capped[0] == "Left contains 2000 more items:"
+        # Body bounded to the budget, one key per line (not a pprint block).
+        body = capped[1:]
+        assert len(body) == 8
+        assert body[0] == "{0: 0}"
+        # The keys shown are the ones pprint would have led with (smallest).
+        assert body == [f"{{{i}: {i}}}" for i in range(8)]
+
+    def test_mapping_extra_items_uncapped_keeps_pprint_block(self) -> None:
+        # Without a budget (``-vv`` / CI / disabled truncation) the full,
+        # compact pprint block is preserved unchanged.
+        from _pytest.assertion._compare_mapping import _compare_eq_mapping
+
+        left = {i: i for i in range(20)}
+        uncapped = list(_compare_eq_mapping(left, {}, util.dummy_highlighter, 0, None))
+        assert uncapped[0] == "Left contains 20 more items:"
+        # A pprint block opens with "{" and closes with "}".
+        assert uncapped[1].startswith("{")
+        assert uncapped[-1].endswith("}")
+        assert len(uncapped) > 8
+
+    def test_mapping_extra_items_formatting_work_is_bounded(self) -> None:
+        # Non-regression guard: capping the *output* to N lines is not
+        # enough — an implementation that pretty-prints the whole subdict
+        # and then slices to N lines produces the same N lines while doing
+        # O(N) formatting. Count the value ``repr`` calls (deterministic,
+        # timing-free) and assert they stay flat as the input grows; they
+        # explode to O(N) the moment the full-subdict pformat comes back.
+        from _pytest.assertion._compare_mapping import _compare_eq_mapping
+
+        class Tracked:
+            reprs = 0
+
+            def __init__(self, v: int) -> None:
+                self.v = v
+
+            def __repr__(self) -> str:
+                Tracked.reprs += 1
+                return f"T({self.v})"
+
+        def reprs_for(n: int) -> int:
+            left = {i: Tracked(i) for i in range(n)}
+            Tracked.reprs = 0  # count formatting only, not construction
+            list(_compare_eq_mapping(left, {}, util.dummy_highlighter, 0, 8))
+            return Tracked.reprs
+
+        small = reprs_for(1_000)
+        big = reprs_for(100_000)
+        assert small == big  # work independent of input size
+        assert big < 50  # only the budget's worth of values are formatted
+
+    def test_mapping_extra_items_cap_preserves_truncation_footer(
+        self, pytester: Pytester
+    ) -> None:
+        # End-to-end: the capped subdict still leaves the iterable "Full
+        # diff" fallback to feed truncation, so the exact hidden-line count
+        # in the footer is preserved (this PR does not drop it).
+        pytester.makepyfile(
+            "def test_x():\n    assert {i: i for i in range(2000)} == {}\n"
+        )
+        result = pytester.runpytest("-v")
+        result.stdout.fnmatch_lines(
+            [
+                "*Left contains 2000 more items:*",
+                "*Full output truncated (* lines hidden), use '-vv' to show*",
+            ]
+        )
 
     def test_sequence_different_items(self) -> None:
         lines = callequal((1, 2), (3, 4, 5), verbose=2)

@@ -1,0 +1,8 @@
+A dict comparison with many keys only on one side ("Left/Right contains
+N more items") no longer pretty-prints the whole extra subdict when the
+explanation is going to be truncated anyway: past the truncation budget
+it emits only the smallest few keys, one per line. The item count is
+still reported in the header and the truncation footer is unchanged, so
+no information the user would have seen is lost. A failing
+``assert {i: i for i in range(2000)} == {}`` no longer spends time
+formatting ~2000 lines only to discard them.
