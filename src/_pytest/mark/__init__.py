@@ -10,6 +10,7 @@ import dataclasses
 from typing import TYPE_CHECKING
 
 from .expression import Expression
+from .structures import _empty_parameter_set_mark_key
 from .structures import _EmptyParameterSetMark
 from .structures import _HiddenParam
 from .structures import EMPTY_PARAMETERSET_OPTION
@@ -295,7 +296,7 @@ def pytest_configure(config: Config) -> None:
     MARK_GEN._config = config
 
     # Eagerly validate the value; it is only read lazily during collection.
-    config.getini(EMPTY_PARAMETERSET_OPTION)
+    config.getini(_empty_parameter_set_mark_key)
 
 
 def pytest_unconfigure(config: Config) -> None:

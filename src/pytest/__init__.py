@@ -17,6 +17,7 @@ from _pytest.config import console_main
 from _pytest.config import ExitCode
 from _pytest.config import hookimpl
 from _pytest.config import hookspec
+from _pytest.config import IniOption
 from _pytest.config import main
 from _pytest.config import PytestPluginManager
 from _pytest.config import UsageError
@@ -118,6 +119,7 @@ __all__ = [
     "FixtureRequest",
     "Function",
     "HookRecorder",
+    "IniOption",
     "Item",
     "LineMatcher",
     "LogCaptureFixture",

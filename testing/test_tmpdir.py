@@ -46,6 +46,8 @@ class FakeConfig:
         return lambda *k: None
 
     def getini(self, name):
+        if isinstance(name, pytest.IniOption):
+            name = name.name
         if name == "tmp_path_retention_count":
             return 3
         elif name == "tmp_path_retention_policy":

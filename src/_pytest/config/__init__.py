@@ -34,10 +34,13 @@ from typing import Any
 from typing import cast
 from typing import Final
 from typing import final
+from typing import Generic
 from typing import IO
 from typing import Literal
+from typing import overload
 from typing import TextIO
 from typing import TYPE_CHECKING
+from typing import TypeVar
 import warnings
 
 from pluggy import HookimplMarker
@@ -1040,6 +1043,48 @@ class _DeprecatedInicfgProxy(MutableMapping[str, Any]):
         return len(self._config._inicfg)
 
 
+_IniOptionValueT = TypeVar("_IniOptionValueT")
+
+
+@final
+class IniOption(Generic[_IniOptionValueT]):
+    """A typed key for a configuration option, usable with
+    :func:`config.getini <pytest.Config.getini>`.
+
+    The module that registers an option can declare a matching key carrying
+    the option's name and value type::
+
+        favorite_fruit_key = IniOption[Literal["apple", "banana"]]("favorite_fruit")
+
+
+        def pytest_addoption(parser):
+            parser.addini(
+                "favorite_fruit",
+                "The fruit to pick first.",
+                type=Literal["apple", "banana"],
+                default="apple",
+            )
+
+    Reading the option through the key gives the value the declared type,
+    so type checkers can check what is done with it, unlike the untyped
+    value a plain string name returns::
+
+        def pytest_configure(config):
+            fruit = config.getini(favorite_fruit_key)
+            # fruit is Literal["apple", "banana"] for type checkers
+    """
+
+    __slots__ = ("name",)
+
+    def __init__(self, name: str) -> None:
+        #: Name of the option, as registered with
+        #: :func:`parser.addini <pytest.Parser.addini>`.
+        self.name = name
+
+    def __repr__(self) -> str:
+        return f"IniOption({self.name!r})"
+
+
 @final
 class Config:
     """Access to configuration values, pluginmanager and plugin hooks.
@@ -1710,8 +1755,18 @@ class Config:
         assert isinstance(x, list)
         x.append(line)  # modifies the cached list inline
 
-    def getini(self, name: str) -> Any:
+    @overload
+    def getini(self, name: str) -> Any: ...
+
+    @overload
+    def getini(self, name: IniOption[_IniOptionValueT]) -> _IniOptionValueT: ...
+
+    def getini(self, name: str | IniOption[Any]) -> Any:
         """Return configuration value the an :ref:`configuration file <configfiles>`.
+
+        The option can be identified by its name, in which case the returned
+        value is untyped, or by an :class:`IniOption` key, in which case the
+        returned value has the type the key declares.
 
         If a configuration value is not defined in a
         :ref:`configuration file <configfiles>`, then the ``default`` value
@@ -1743,6 +1798,8 @@ class Config:
         If the value read from the configuration file does not match the
         registered ``type``, a :class:`~pytest.UsageError` is raised.
         """
+        if isinstance(name, IniOption):
+            name = name.name
         canonical_name = self._parser._ini_aliases.get(name, name)
         try:
             return self._inicache[canonical_name]

@@ -8,6 +8,7 @@ none of the code triggers any mypy errors.
 from __future__ import annotations
 
 import contextlib
+from typing import Any
 from typing import Literal
 
 from typing_extensions import assert_type
@@ -78,3 +79,11 @@ def check_scope_typing() -> None:
 @pytest.mark.parametrize("x", [ImportError, AttributeError])
 def check_mypy_bug_with_argvalues(x) -> None:
     pass
+
+
+def check_getini_ini_option_key(config: pytest.Config) -> None:
+    from _pytest.config import IniOption
+
+    fruit_key = IniOption[Literal["apple", "banana"]]("favorite_fruit")
+    assert_type(config.getini(fruit_key), Literal["apple", "banana"])
+    assert_type(config.getini("favorite_fruit"), Any)

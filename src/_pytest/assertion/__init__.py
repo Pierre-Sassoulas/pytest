@@ -18,12 +18,16 @@ from _pytest.assertion._typing import TruncationBudget
 from _pytest.assertion.rewrite import assertstate_key
 from _pytest.config import Config
 from _pytest.config import hookimpl
+from _pytest.config import IniOption
 from _pytest.config.argparsing import Parser
 from _pytest.nodes import Item
 
 
 if TYPE_CHECKING:
     from _pytest.main import Session
+
+
+_text_diff_style_key = IniOption[_AssertionTextDiffStyle]("assertion_text_diff_style")
 
 
 def pytest_addoption(parser: Parser) -> None:
@@ -79,7 +83,7 @@ def pytest_addoption(parser: Parser) -> None:
 
 def pytest_configure(config: Config) -> None:
     # Eagerly validate the value; it is only read lazily when an assertion fails.
-    config.getini("assertion_text_diff_style")
+    config.getini(_text_diff_style_key)
 
 
 def register_assert_rewrite(*names: str) -> None:
@@ -248,7 +252,7 @@ def pytest_assertrepr_compare(
         right=right,
         verbose=config.get_verbosity(Config.VERBOSITY_ASSERTIONS),
         highlighter=highlighter,
-        assertion_text_diff_style=config.getini("assertion_text_diff_style"),
+        assertion_text_diff_style=config.getini(_text_diff_style_key),
         truncation_budget=truncation_budget,
     )
     return truncate.materialize_with_truncation(lines, config) or None

@@ -21,6 +21,7 @@ from _pytest.config import Config
 from _pytest.config import ConftestImportFailure
 from _pytest.config import console_main
 from _pytest.config import ExitCode
+from _pytest.config import IniOption
 from _pytest.config import parse_warning_filter
 from _pytest.config.argparsing import get_ini_default_for_type
 from _pytest.config.argparsing import Parser
@@ -1285,6 +1286,33 @@ class TestConfigAPI:
         parser = Parser(_ispytest=True)
         with pytest.raises(ValueError, match="Literal choices must be strings"):
             parser.addini("ini_param", "", type=Literal["auto", 1], default="auto")
+
+    def test_getini_ini_option_key(self, pytester: Pytester) -> None:
+        """An IniOption key reads the same value as the plain option name."""
+        pytester.makeconftest(
+            """
+            from typing import Literal
+
+            def pytest_addoption(parser):
+                parser.addini(
+                    "favorite_fruit",
+                    "",
+                    type=Literal["apple", "banana"],
+                    default="apple",
+                )
+        """
+        )
+        pytester.makeini(
+            """
+            [pytest]
+            favorite_fruit = banana
+        """
+        )
+        config = pytester.parseconfig()
+        key = IniOption[Literal["apple", "banana"]]("favorite_fruit")
+        assert config.getini(key) == "banana"
+        assert config.getini(key) == config.getini("favorite_fruit")
+        assert repr(key) == "IniOption('favorite_fruit')"
 
     def test_addinivalue_line_existing(self, pytester: Pytester) -> None:
         pytester.makeconftest(

@@ -68,7 +68,9 @@ def mock_config(
 
             raise KeyError(f"Not mocked out: {verbosity_type}")
 
-        def getini(self, name: str) -> str:
+        def getini(self, name: str | pytest.IniOption[Any]) -> str:
+            if isinstance(name, pytest.IniOption):
+                name = name.name
             if name == "assertion_text_diff_style":
                 return assertion_text_diff_style
             # Truncation defaults to disabled (``"0"``) so ``callop``-style

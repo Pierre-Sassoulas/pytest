@@ -24,6 +24,7 @@ from _pytest._code.code import ExceptionRepr
 from _pytest._code.code import ReprFileLocation
 from _pytest.config import Config
 from _pytest.config import filename_arg
+from _pytest.config import IniOption
 from _pytest.config.argparsing import Parser
 from _pytest.fixtures import FixtureRequest
 from _pytest.reports import TestReport
@@ -37,6 +38,10 @@ xml_key = StashKey["LogXML"]()
 _JunitLogging = Literal["no", "log", "system-out", "system-err", "out-err", "all"]
 _JunitDurationReport = Literal["total", "call"]
 _JunitFamily = Literal["legacy", "xunit1", "xunit2"]
+
+_junit_logging_key = IniOption[_JunitLogging]("junit_logging")
+_junit_duration_report_key = IniOption[_JunitDurationReport]("junit_duration_report")
+_junit_family_key = IniOption[_JunitFamily]("junit_family")
 
 
 def bin_xml_escape(arg: object) -> str:
@@ -433,9 +438,9 @@ def pytest_configure(config: Config) -> None:
             xmlpath,
             config.option.junitprefix,
             config.getini("junit_suite_name"),
-            config.getini("junit_logging"),
-            config.getini("junit_duration_report"),
-            config.getini("junit_family"),
+            config.getini(_junit_logging_key),
+            config.getini(_junit_duration_report_key),
+            config.getini(_junit_family_key),
             config.getini("junit_log_passing_tests"),
         )
         config.pluginmanager.register(config.stash[xml_key])

@@ -26,6 +26,7 @@ from _pytest.compat import get_user_id
 from _pytest.config import Config
 from _pytest.config import ExitCode
 from _pytest.config import hookimpl
+from _pytest.config import IniOption
 from _pytest.config.argparsing import Parser
 from _pytest.deprecated import check_ispytest
 from _pytest.fixtures import fixture
@@ -38,6 +39,7 @@ from _pytest.stash import StashKey
 
 tmppath_result_key = StashKey[dict[str, bool]]()
 RetentionType = Literal["all", "failed", "none"]
+_retention_policy_key = IniOption[RetentionType]("tmp_path_retention_policy")
 
 
 @final
@@ -98,7 +100,7 @@ class TempPathFactory:
                 f"tmp_path_retention_count must be >= 0. Current input: {count}."
             )
 
-        policy: RetentionType = config.getini("tmp_path_retention_policy")
+        policy = config.getini(_retention_policy_key)
 
         return cls(
             given_basetemp=config.option.basetemp,

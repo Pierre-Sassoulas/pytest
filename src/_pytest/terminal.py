@@ -44,6 +44,7 @@ from _pytest.config import _PluggyPlugin
 from _pytest.config import Config
 from _pytest.config import ExitCode
 from _pytest.config import hookimpl
+from _pytest.config import IniOption
 from _pytest.config.argparsing import Parser
 from _pytest.nodes import Item
 from _pytest.nodes import Node
@@ -79,6 +80,7 @@ _REPORTCHARS_DEFAULT = "fE"
 _ConsoleOutputStyle = Literal[
     "classic", "progress", "count", "times", "progress-even-when-capture-no"
 ]
+_console_output_style_key = IniOption[_ConsoleOutputStyle]("console_output_style")
 
 
 class MoreQuietAction(argparse.Action):
@@ -295,7 +297,7 @@ def pytest_addoption(parser: Parser) -> None:
 
 def pytest_configure(config: Config) -> None:
     # Eagerly validate the value; it is only read lazily during reporting.
-    config.getini("console_output_style")
+    config.getini(_console_output_style_key)
     reporter = TerminalReporter(config, sys.stdout)
     config.pluginmanager.register(reporter, "terminalreporter")
     if config.option.debug or config.option.traceconfig:
@@ -422,14 +424,14 @@ class TerminalReporter:
         # overridden by progress-even-when-capture-no
         if (
             self.config.getoption("capture", "no") == "no"
-            and self.config.getini("console_output_style")
+            and self.config.getini(_console_output_style_key)
             != "progress-even-when-capture-no"
         ):
             return False
         # do not show progress if we are showing fixture setup/teardown
         if self.config.getoption("setupshow", False):
             return False
-        cfg: _ConsoleOutputStyle = self.config.getini("console_output_style")
+        cfg = self.config.getini(_console_output_style_key)
         match cfg:
             case "progress" | "progress-even-when-capture-no":
                 return "progress"

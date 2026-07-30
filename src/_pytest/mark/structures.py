@@ -26,6 +26,7 @@ from ..compat import NOTSET
 from ..compat import NotSetType
 from _pytest.compat import assert_never
 from _pytest.config import Config
+from _pytest.config import IniOption
 from _pytest.deprecated import check_ispytest
 from _pytest.deprecated import PARAMETRIZE_NON_COLLECTION_ITERABLE
 from _pytest.outcomes import fail
@@ -41,6 +42,9 @@ if TYPE_CHECKING:
 
 EMPTY_PARAMETERSET_OPTION = "empty_parameter_set_mark"
 _EmptyParameterSetMark = Literal["skip", "xfail", "fail_at_collect"]
+_empty_parameter_set_mark_key = IniOption[_EmptyParameterSetMark](
+    EMPTY_PARAMETERSET_OPTION
+)
 
 
 # Singleton type for HIDDEN_PARAM, as described in:
@@ -66,7 +70,7 @@ def get_empty_parameterset_mark(
 
     _fs, lineno = getfslineno(func)
     reason = f"got empty parameter set for ({argslisting})"
-    requested_mark: _EmptyParameterSetMark = config.getini(EMPTY_PARAMETERSET_OPTION)
+    requested_mark = config.getini(_empty_parameter_set_mark_key)
     match requested_mark:
         case "skip":
             return MARK_GEN.skip(reason=reason)

@@ -1010,6 +1010,14 @@ FixtureDef
     :members:
     :show-inheritance:
 
+IniOption
+~~~~~~~~~
+
+.. autoclass:: pytest.IniOption
+    :members:
+
+    .. versionadded:: 9.2
+
 MarkDecorator
 ~~~~~~~~~~~~~
 
