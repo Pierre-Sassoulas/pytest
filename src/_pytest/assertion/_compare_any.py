@@ -11,6 +11,7 @@ from _pytest.assertion._compare_mapping import _compare_eq_mapping
 from _pytest.assertion._compare_sequence import _compare_eq_iterable
 from _pytest.assertion._compare_sequence import _compare_eq_sequence
 from _pytest.assertion._compare_set import _compare_eq_set
+from _pytest.assertion._compare_set import SET_COMPARISON_FUNCTIONS
 from _pytest.assertion._guards import has_default_eq
 from _pytest.assertion._guards import isattrs
 from _pytest.assertion._guards import isdatacls
@@ -21,6 +22,38 @@ from _pytest.assertion._typing import _HighlightFunc
 from _pytest.assertion._typing import NO_TRUNCATION_BUDGET
 from _pytest.assertion._typing import TruncationBudget
 from _pytest.assertion.compare_text import _compare_eq_text
+from _pytest.assertion.compare_text import _notin_text
+
+
+def _compute_explanation(
+    left: object,
+    op: str,
+    right: object,
+    highlighter: _HighlightFunc,
+    verbose: int,
+    assertion_text_diff_style: _AssertionTextDiffStyle,
+    truncation_budget: TruncationBudget = NO_TRUNCATION_BUDGET,
+) -> Iterator[str]:
+    """Yield the per-line explanation for ``left op right`` (without summary).
+
+    Each operator that pytest can explain has one arm here, delegating to
+    the family of comparisons it belongs to. Yields nothing for operands
+    and operators with no specialised explanation.
+    """
+    match (left, op, right):
+        case (_, "==", _):
+            yield from _compare_eq_any(
+                left,
+                right,
+                highlighter,
+                verbose,
+                assertion_text_diff_style,
+                truncation_budget,
+            )
+        case (str(), "not in", str()):
+            yield from _notin_text(left, right, verbose, truncation_budget)
+        case (AbstractSet(), "!=" | ">=" | "<=" | ">" | "<", AbstractSet()):
+            yield from SET_COMPARISON_FUNCTIONS[op](left, right, highlighter, verbose)
 
 
 def _compare_eq_any(

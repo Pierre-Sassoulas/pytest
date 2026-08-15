@@ -6,20 +6,17 @@ from __future__ import annotations
 from collections.abc import Callable
 from collections.abc import Iterator
 from collections.abc import Sequence
-from collections.abc import Set as AbstractSet
 from unicodedata import normalize
 
 from _pytest import outcomes
 import _pytest._code
 from _pytest._io.saferepr import saferepr
 from _pytest._io.saferepr import saferepr_unlimited
-from _pytest.assertion._compare_any import _compare_eq_any
-from _pytest.assertion._compare_set import SET_COMPARISON_FUNCTIONS
+from _pytest.assertion._compare_any import _compute_explanation
 from _pytest.assertion._typing import _AssertionTextDiffStyle
 from _pytest.assertion._typing import _HighlightFunc
 from _pytest.assertion._typing import NO_TRUNCATION_BUDGET
 from _pytest.assertion._typing import TruncationBudget
-from _pytest.assertion.compare_text import _notin_text
 from _pytest.assertion.highlight import dummy_highlighter as dummy_highlighter
 from _pytest.config import Config
 
@@ -150,22 +147,15 @@ def assertrepr_compare(
     summary = f"{left_repr} {op} {right_repr}"
 
     try:
-        match (left, op, right):
-            case (_, "==", _):
-                source = _compare_eq_any(
-                    left,
-                    right,
-                    highlighter,
-                    verbose,
-                    assertion_text_diff_style,
-                    truncation_budget,
-                )
-            case (str(), "not in", str()):
-                source = _notin_text(left, right, verbose, truncation_budget)
-            case (AbstractSet(), "!=" | ">=" | "<=" | ">" | "<", AbstractSet()):
-                source = SET_COMPARISON_FUNCTIONS[op](left, right, highlighter, verbose)
-            case _:
-                source = iter(())
+        source = _compute_explanation(
+            left,
+            op,
+            right,
+            highlighter,
+            verbose,
+            assertion_text_diff_style,
+            truncation_budget,
+        )
 
         # Only yield the summary if there is a detailed explanation.
         # Make sure there's a separating empty line after the summary.
