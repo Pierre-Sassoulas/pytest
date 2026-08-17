@@ -201,6 +201,8 @@ lint.ignore = [
     "PLR5501", # Use `elif` instead of `else` then `if`
     "PLW0120", # remove the else and dedent its contents
     "PLW0603", # Using the global statement
+    # 'test_recwarn.py' tests 'pytest.warns' itself, so what happens inside the
+    # block while the warning filter is installed is the behaviour under test.
     "PLW1641", # Does not implement the __hash__ method
     "PLW2901", # for loop variable overwritten by assignment target
     # flake8-pytest-style ignore
