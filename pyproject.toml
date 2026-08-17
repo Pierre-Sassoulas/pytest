@@ -143,6 +143,8 @@ lint.ignore = [
     "B011", # Do not `assert False` (`python -O` removes these calls)
     "B028", # No explicit `stacklevel` keyword argument found
     # flake8-blind-except ignore
+    # pytest runs arbitrary user code and has to survive whatever it raises: a
+    # broken '__repr__' or a failing plugin becomes a report, not a crash.
     "BLE001", # Do not catch blind exception
     # flake8-comprehensions ignore
     "C408", # Unnecessary `dict()`/`list()`/`tuple()` call (rewrite as a literal)
