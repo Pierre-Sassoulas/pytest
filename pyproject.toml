@@ -217,6 +217,8 @@ lint.ignore = [
     "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
     "RUF061", # Use context-manager form of `pytest.raises()`
     # flake8-bandit ignore
+    # Assertion rewriting compiles the rewritten module and 'exec's it, which is
+    # how pytest gets its assertion messages in the first place.
     "S102", # Use of `exec` detected
     # Capture, pastebin and '--debug' keep a file open for the whole session,
     # which is exactly what a context manager cannot express.
