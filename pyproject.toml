@@ -204,6 +204,8 @@ lint.ignore = [
     "RUF061", # Use context-manager form of `pytest.raises()`
     # flake8-bandit ignore
     "S102", # Use of `exec` detected
+    # Capture, pastebin and '--debug' keep a file open for the whole session,
+    # which is exactly what a context manager cannot express.
     # Best-effort clean up and introspection, where pytest has nowhere to log to
     # and nothing useful to do with the exception.
     "S110", # `try`-`except`-`pass` detected, consider logging the exception
