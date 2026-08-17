@@ -779,11 +779,8 @@ class LoggingPlugin:
             return False
 
         terminal_reporter = self._config.pluginmanager.get_plugin("terminalreporter")
-        if terminal_reporter is None:
-            # terminal reporter is disabled e.g. by pytest-xdist.
-            return False
-
-        return True
+        # A missing terminal reporter means it is disabled e.g. by pytest-xdist.
+        return terminal_reporter is not None
 
     @hookimpl(wrapper=True, tryfirst=True)
     def pytest_sessionstart(self) -> Generator[None]:

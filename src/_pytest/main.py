@@ -1206,9 +1206,7 @@ def is_collection_argument_subsumed_by(
     # A `by` without parametrization (None) matches everything, e.g.
     # `pytest x.py::test_it` matches `x.py::test_it[0]`. Otherwise must be
     # exactly equal.
-    if by.parametrization is not None and by.parametrization != arg.parametrization:
-        return False
-    return True
+    return by.parametrization is None or by.parametrization == arg.parametrization
 
 
 def normalize_collection_arguments(

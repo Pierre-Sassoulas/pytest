@@ -1629,10 +1629,7 @@ def filter_traceback(entry: TracebackEntry) -> bool:
     parents = p.parents
     if _PLUGGY_DIR in parents:
         return False
-    if _PYTEST_DIR in parents:
-        return False
-
-    return True
+    return _PYTEST_DIR not in parents
 
 
 def filter_excinfo_traceback(
