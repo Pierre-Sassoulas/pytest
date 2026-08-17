@@ -204,6 +204,8 @@ lint.ignore = [
     "RUF061", # Use context-manager form of `pytest.raises()`
     # flake8-bandit ignore
     "S102", # Use of `exec` detected
+    # Best-effort clean up and introspection, where pytest has nowhere to log to
+    # and nothing useful to do with the exception.
     "S110", # `try`-`except`-`pass` detected, consider logging the exception
     # flake8-simplify ignore
     "SIM102", # Use a single `if` statement instead of nested `if` statements
