@@ -133,8 +133,6 @@ lint.extend-select = [
     "W",      # pycodestyle
 ]
 lint.ignore = [
-    # flake8-async ignore
-    "ASYNC115", # Use `lowlevel.checkpoint()` instead of `sleep(0)`
     # bugbear ignore
     "B004", # Using `hasattr(x, "__call__")` to test if x is callable is unreliable.
     "B007", # Loop control variable `i` not used within loop body
@@ -260,6 +258,12 @@ lint.per-file-ignores."testing/**/*.py" = [
 # can't be disabled on a line-by-line basis in file
 lint.per-file-ignores."testing/code/test_source.py" = [
     "F841",
+]
+lint.per-file-ignores."testing/plugins_integration/**/*.py" = [
+    # These files check that the async plugins still work with pytest, calling
+    # them the way a user would. Awaiting a plain 'sleep(0)' is the point, and
+    # a 'lowlevel' call nobody writes in a test suite would check less.
+    "ASYNC115", # Use `lowlevel.checkpoint()` instead of `sleep(0)`
 ]
 lint.per-file-ignores."testing/python/approx.py" = [
     "B015",
