@@ -427,7 +427,7 @@ class TestApprox:
         assert 1 == approx(1, rel=1e-6, abs=1e-12)
         assert not (1 != approx(1, rel=1e-6, abs=1e-12))  # noqa: SIM202
         assert 10 != approx(1, rel=1e-6, abs=1e-12)
-        assert not (10 == approx(1, rel=1e-6, abs=1e-12))
+        assert not (10 == approx(1, rel=1e-6, abs=1e-12))  # noqa: SIM201
 
     def test_exactly_equal(self):
         examples = [
@@ -1334,7 +1334,7 @@ class TestApproxDatetime:
         dt2 = datetime(2024, 1, 1, 12, 0, 5)
         tol = timedelta(seconds=1)
         assert dt1 != approx(dt2, abs=tol)
-        assert not (dt1 == approx(dt2, abs=tol))
+        assert not (dt1 == approx(dt2, abs=tol))  # noqa: SIM201
 
     def test_datetime_with_timezone(self):
         from datetime import datetime

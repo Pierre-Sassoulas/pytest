@@ -666,7 +666,7 @@ class TestFunction:
         """
         )
         assert items[0] != items[1]
-        assert not (items[0] == items[1])
+        assert not (items[0] == items[1])  # noqa: SIM201
 
     def test_pyfunc_call(self, pytester: Pytester) -> None:
         item = pytester.getitem("def test_func(): raise ValueError")
@@ -868,7 +868,7 @@ class TestSorting:
 
         fn3 = pytester.collect_by_name(modcol, "test_fail")
         assert isinstance(fn3, pytest.Function)
-        assert not (fn1 == fn3)
+        assert not (fn1 == fn3)  # noqa: SIM201
         assert fn1 != fn3
 
         for fn in fn1, fn2, fn3:
