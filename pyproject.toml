@@ -210,6 +210,8 @@ lint.ignore = [
     "PT025", # `pytest.mark.usefixtures` has no effect on fixtures
     "PT031", # `pytest.warns()` block should contain a single simple statement
     # flake8-use-pathlib ignore
+    # pytest vendors 'py.path' to keep the 'legacy_path' API alive, so its own
+    # tests have to keep using it.
     "PTH124", # `py.path` is in maintenance mode, use `pathlib` instead
     # ruff ignore
     "RUF012", # Mutable class attributes should be annotated with `typing.ClassVar`
