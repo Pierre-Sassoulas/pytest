@@ -167,6 +167,8 @@ lint.ignore = [
     "D404", # First word of the docstring should not be "This"
     "D415", # First line should end with a period, question mark, or exclamation point
     # flake8-datetimez ignore
+    # These datetimes are fixed points used as arithmetic operands, never as a
+    # wall clock, so there is no timezone to attach to them.
     "DTZ001", # `datetime.datetime()` called without a `tzinfo` argument
     "DTZ005", # `datetime.datetime.now()` called without a `tz` argument
     # pytest can do weird low-level things, and we usually know
