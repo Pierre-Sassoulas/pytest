@@ -232,6 +232,8 @@ lint.ignore = [
     "SIM103", # Return the condition directly
     "SIM114", # Combine `if` branches using logical `or` operator
     "SIM115", # Use a context manager for opening files
+    # The outer context on its own line shows what wraps what, and about half of
+    # these are too long to combine without the formatter parenthesizing them.
     "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
     "SIM201", # Use `!=` instead of `not ... == ...`
     "SIM211", # Use `not ...` instead of `False if ... else True`
