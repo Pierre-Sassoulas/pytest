@@ -1427,7 +1427,7 @@ class FixtureFunctionMarker:
             raise ValueError("class fixtures not supported (maybe in the future)")
 
         if isinstance(function, FixtureFunctionDefinition):
-            raise ValueError(
+            raise ValueError(  # noqa: TRY004
                 f"@pytest.fixture is being applied more than once to the same function {function.__name__!r}"
             )
 

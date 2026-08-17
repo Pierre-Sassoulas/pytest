@@ -107,7 +107,7 @@ def evaluate_condition(item: Item, mark: Mark, condition: object) -> tuple[bool,
             item.ihook.pytest_markeval_namespace(config=item.config)
         ):
             if not isinstance(dictionary, Mapping):
-                raise ValueError(
+                raise ValueError(  # noqa: TRY004
                     f"pytest_markeval_namespace() needs to return a dict, got {dictionary!r}"
                 )
             globals_.update(dictionary)

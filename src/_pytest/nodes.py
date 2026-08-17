@@ -255,7 +255,7 @@ class Node(abc.ABC, metaclass=NodeMeta):
         """
         # enforce type checks here to avoid getting a generic type error later otherwise.
         if not isinstance(warning, Warning):
-            raise ValueError(
+            raise ValueError(  # noqa: TRY004
                 f"warning must be an instance of Warning or subclass, got {warning!r}"
             )
         path, lineno = get_fslocation_from_item(self)
@@ -320,7 +320,7 @@ class Node(abc.ABC, metaclass=NodeMeta):
         elif isinstance(marker, str):
             marker_ = getattr(MARK_GEN, marker)
         else:
-            raise ValueError("is not a string or pytest.mark.* Marker")
+            raise ValueError("is not a string or pytest.mark.* Marker")  # noqa: TRY004
         self.keywords[marker_.name] = marker_
         if append:
             self.own_markers.append(marker_.mark)

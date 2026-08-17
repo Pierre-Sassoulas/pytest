@@ -1510,7 +1510,7 @@ class Pytester:
         args = (f"--basetemp={p}", *args)
         for plugin in self.plugins:
             if not isinstance(plugin, str):
-                raise ValueError(
+                raise ValueError(  # noqa: TRY004
                     f"Specifying plugins as objects is not supported in pytester subprocess mode; "
                     f"specify by name instead: {plugin}"
                 )

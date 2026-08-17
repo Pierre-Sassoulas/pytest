@@ -207,7 +207,6 @@ lint.ignore = [
     "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
     # tryceratops ignore
     "TRY002", # Create your own exception
-    "TRY004", # Prefer `TypeError` exception for invalid type
 ]
 lint.per-file-ignores."doc/**/*.py" = [
     "PLR0133", # Two constants compared in a comparison,
