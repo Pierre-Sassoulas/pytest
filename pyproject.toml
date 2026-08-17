@@ -205,14 +205,15 @@ lint.ignore = [
     "SIM102", # Use a single `if` statement instead of nested `if` statements
     "SIM115", # Use a context manager for opening files
     "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
-    # tryceratops ignore
-    "TRY002", # Create your own exception
 ]
 lint.per-file-ignores."doc/**/*.py" = [
     "PLR0133", # Two constants compared in a comparison,
     "RUF059",  # Unpacked variable is never used
     "S102",    # Use of `exec` detected
-    "TRY002",  # Create your own exception
+    # The reporting demo shows what a failure looks like, and its output is
+    # quoted verbatim in 'reportingdemo.rst'. A project-specific exception
+    # would be noise a reader has to look up.
+    "TRY002", # Create your own exception
 ]
 lint.per-file-ignores."src/_pytest/_py/**/*.py" = [
     "B",

@@ -257,15 +257,15 @@ def test_messages(caplog: pytest.LogCaptureFixture) -> None:
     assert len(caplog.text.splitlines()) > len(caplog.messages)
 
     try:
-        raise Exception("test")
-    except Exception:
+        raise RuntimeError("test")
+    except RuntimeError:
         logger.exception("oops")
 
     assert "oops" in caplog.text
     assert "oops" in caplog.messages[-1]
     # Tracebacks are stored in the record and not added until the formatter or handler.
-    assert "Exception" in caplog.text
-    assert "Exception" not in caplog.messages[-1]
+    assert "RuntimeError" in caplog.text
+    assert "RuntimeError" not in caplog.messages[-1]
 
 
 def test_record_tuples(caplog: pytest.LogCaptureFixture) -> None:

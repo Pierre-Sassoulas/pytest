@@ -78,14 +78,19 @@ def test_get_real_func_partial() -> None:
     assert get_real_func(partial(foo)) is foo
 
 
+class NotAnExceptionError(BaseException):
+    """A ``BaseException`` that is not an ``Exception``, so nothing catching
+    ``Exception`` swallows it."""
+
+
 class ErrorsHelper:
     @property
     def raise_baseexception(self):
-        raise BaseException("base exception should be raised")
+        raise NotAnExceptionError("base exception should be raised")
 
     @property
     def raise_exception(self):
-        raise Exception("exception should be caught")
+        raise RuntimeError("exception should be caught")
 
     @property
     def raise_fail_outcome(self):

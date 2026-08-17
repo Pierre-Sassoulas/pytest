@@ -85,8 +85,8 @@ def test_code_from_func() -> None:
 def test_unicode_handling() -> None:
     value = "ąć".encode()
 
-    with pytest.raises(Exception) as excinfo:
-        raise Exception(value)
+    with pytest.raises(RuntimeError) as excinfo:
+        raise RuntimeError(value)
     str(excinfo)
 
 

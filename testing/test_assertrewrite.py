@@ -2163,7 +2163,7 @@ class TestAssertionPass:
         not occur) if there is no hook declared for pytest_assertion_pass"""
 
         def raise_on_assertionpass(*_, **__):
-            raise Exception("Assertion passed called when it shouldn't!")
+            raise RuntimeError("Assertion passed called when it shouldn't!")
 
         monkeypatch.setattr(
             _pytest.assertion.rewrite, "_call_assertion_pass", raise_on_assertionpass
@@ -2190,7 +2190,7 @@ class TestAssertionPass:
         not occur) if there is no hook declared for pytest_assertion_pass"""
 
         def raise_on_assertionpass(*_, **__):
-            raise Exception("Assertion passed called when it shouldn't!")
+            raise RuntimeError("Assertion passed called when it shouldn't!")
 
         monkeypatch.setattr(
             _pytest.assertion.rewrite, "_call_assertion_pass", raise_on_assertionpass

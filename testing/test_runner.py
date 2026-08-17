@@ -65,7 +65,7 @@ class TestSetupState:
             r.append("fin1")
 
         def fin2():
-            raise Exception("oops")
+            raise RuntimeError("oops")
 
         def fin3():
             r.append("fin3")
@@ -83,10 +83,10 @@ class TestSetupState:
 
     def test_teardown_multiple_fail(self, pytester: Pytester) -> None:
         def fin1():
-            raise Exception("oops1")
+            raise RuntimeError("oops1")
 
         def fin2():
-            raise Exception("oops2")
+            raise RuntimeError("oops2")
 
         item = pytester.getitem("def test_func(): pass")
         ss = item.session._setupstate
@@ -106,7 +106,7 @@ class TestSetupState:
         module_teardown = []
 
         def fin_func():
-            raise Exception("oops1")
+            raise RuntimeError("oops1")
 
         def fin_module():
             module_teardown.append("fin_module")
