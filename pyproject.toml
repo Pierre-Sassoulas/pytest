@@ -193,7 +193,6 @@ lint.ignore = [
     "PLW1641", # Does not implement the __hash__ method
     "PLW2901", # for loop variable overwritten by assignment target
     # flake8-pytest-style ignore
-    "PT020", # `@pytest.yield_fixture` is deprecated, use `@pytest.fixture`
     "PT031", # `pytest.warns()` block should contain a single simple statement
     # flake8-use-pathlib ignore
     "PTH124", # `py.path` is in maintenance mode, use `pathlib` instead

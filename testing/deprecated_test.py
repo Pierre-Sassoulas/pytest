@@ -76,7 +76,7 @@ def test_hookimpl_via_function_attributes_are_deprecated():
 def test_yield_fixture_is_deprecated() -> None:
     with pytest.warns(DeprecationWarning, match=r"yield_fixture is deprecated"):
 
-        @pytest.yield_fixture  # type: ignore[deprecated]
+        @pytest.yield_fixture  # type: ignore[deprecated] # noqa: PT020
         def fix():
             assert False
 
