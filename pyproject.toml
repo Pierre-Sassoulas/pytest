@@ -175,6 +175,8 @@ lint.ignore = [
     # what we're doing when we use type(..) is ...
     "E721", # Do not compare types, use `isinstance()`
     # flynt ignore
+    # Joining a list writes one expected output line per source line, which an
+    # f-string full of escaped newlines would hide.
     "FLY002", # Consider an f-string instead of string join
     # flake8-implicit-str-concat ignore
     "ISC004", # Unparenthesized implicit string concatenation in collection
