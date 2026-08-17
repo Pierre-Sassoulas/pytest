@@ -173,8 +173,6 @@ lint.ignore = [
     "FLY002", # Consider an f-string instead of string join
     # flake8-implicit-str-concat ignore
     "ISC004", # Unparenthesized implicit string concatenation in collection
-    # flake8-logging ignore
-    "LOG015", # Call on root logger
     # pylint ignore
     "PLC0105", # `TypeVar` name "E" does not reflect its covariance;
     "PLC0414", # Import alias does not rename original package

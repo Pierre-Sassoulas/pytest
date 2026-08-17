@@ -339,7 +339,7 @@ def test_clear_for_call_stage(
     assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
     private_assert_caplog_records_is_setup_call(caplog)
 
-    logging.info("a_call_log_after_clear")
+    logger.info("a_call_log_after_clear")
     assert [x.message for x in caplog.get_records("call")] == ["a_call_log_after_clear"]
     assert [x.message for x in caplog.get_records("setup")] == ["a_setup_log"]
     private_assert_caplog_records_is_setup_call(caplog)
