@@ -165,7 +165,6 @@ lint.ignore = [
     "D415", # First line should end with a period, question mark, or exclamation point
     # flake8-datetimez ignore
     "DTZ001", # `datetime.datetime()` called without a `tzinfo` argument
-    "DTZ005", # `datetime.datetime.now()` called without a `tz` argument
     # pytest can do weird low-level things, and we usually know
     # what we're doing when we use type(..) is ...
     "E721", # Do not compare types, use `isinstance()`
@@ -222,6 +221,11 @@ lint.per-file-ignores."src/_pytest/_py/**/*.py" = [
 ]
 lint.per-file-ignores."src/_pytest/_version.py" = [
     "I001",
+]
+lint.per-file-ignores."src/_pytest/stepwise.py" = [
+    # The cache stores a naive local timestamp on disk. Making it aware would
+    # make 'datetime.now() - last_cache_date' raise on every pre-existing cache.
+    "DTZ005",
 ]
 lint.per-file-ignores."testing/**/*.py" = [
     "RUF060", # 'Unnecessary membership test on empty collection', always voluntary in tests
