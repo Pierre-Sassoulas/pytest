@@ -1458,7 +1458,7 @@ def test_fixture_disallow_on_marked_functions() -> None:
 
         @pytest.fixture
         @pytest.mark.parametrize("example", ["hello"])
-        @pytest.mark.usefixtures("tmp_path")
+        @pytest.mark.usefixtures("tmp_path")  # noqa: PT025
         def foo():
             raise NotImplementedError()
 
@@ -1471,7 +1471,7 @@ def test_fixture_disallow_marks_on_fixtures() -> None:
     ):
 
         @pytest.mark.parametrize("example", ["hello"])
-        @pytest.mark.usefixtures("tmp_path")
+        @pytest.mark.usefixtures("tmp_path")  # noqa: PT025
         @pytest.fixture
         def foo():
             raise NotImplementedError()
@@ -1486,7 +1486,7 @@ def test_fixture_disallowed_between_marks() -> None:
 
         @pytest.mark.parametrize("example", ["hello"])
         @pytest.fixture
-        @pytest.mark.usefixtures("tmp_path")
+        @pytest.mark.usefixtures("tmp_path")  # noqa: PT025
         def foo():
             raise NotImplementedError()
 
