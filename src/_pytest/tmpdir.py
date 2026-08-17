@@ -181,9 +181,7 @@ class TempPathFactory:
             # good scolding.
             uid = get_user_id()
             if uid is not None:
-                stat_follow_symlinks = (
-                    False if os.stat in os.supports_follow_symlinks else True
-                )
+                stat_follow_symlinks = os.stat not in os.supports_follow_symlinks
                 rootdir_stat = rootdir.stat(follow_symlinks=stat_follow_symlinks)
                 if stat.S_ISLNK(rootdir_stat.st_mode):
                     raise OSError(
@@ -196,9 +194,7 @@ class TempPathFactory:
                         "Fix this and try again."
                     )
                 if (rootdir_stat.st_mode & 0o077) != 0:
-                    chmod_follow_symlinks = (
-                        False if os.chmod in os.supports_follow_symlinks else True
-                    )
+                    chmod_follow_symlinks = os.chmod not in os.supports_follow_symlinks
                     rootdir.chmod(
                         rootdir_stat.st_mode & ~0o077,
                         follow_symlinks=chmod_follow_symlinks,

@@ -212,7 +212,6 @@ lint.ignore = [
     "SIM115", # Use a context manager for opening files
     "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
     "SIM201", # Use `!=` instead of `not ... == ...`
-    "SIM211", # Use `not ...` instead of `False if ... else True`
     # tryceratops ignore
     "TRY002", # Create your own exception
     "TRY004", # Prefer `TypeError` exception for invalid type
