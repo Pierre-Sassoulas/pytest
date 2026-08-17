@@ -147,6 +147,8 @@ lint.ignore = [
     # broken '__repr__' or a failing plugin becomes a report, not a crash.
     "BLE001", # Do not catch blind exception
     # flake8-comprehensions ignore
+    # The keyword form names what it binds, which is the point when the dict is
+    # hook kwargs, 'parametrize' params or a doctest namespace.
     "C408", # Unnecessary `dict()`/`list()`/`tuple()` call (rewrite as a literal)
     # pydocstyle ignore
     "D100", # Missing docstring in public module
