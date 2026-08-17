@@ -1367,9 +1367,7 @@ class Pytester:
         )
         kw["env"] = env
 
-        if stdin is self.CLOSE_STDIN:
-            kw["stdin"] = subprocess.PIPE
-        elif isinstance(stdin, bytes):
+        if stdin is self.CLOSE_STDIN or isinstance(stdin, bytes):
             kw["stdin"] = subprocess.PIPE
         else:
             kw["stdin"] = stdin

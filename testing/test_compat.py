@@ -149,7 +149,7 @@ def test_assert_never_union() -> None:
         with pytest.raises(AssertionError):
             assert_never(x)  # type: ignore[arg-type]
 
-    if isinstance(x, int):
+    if isinstance(x, int):  # noqa: SIM114
         pass
     elif isinstance(x, str):
         pass
@@ -167,7 +167,7 @@ def test_assert_never_enum() -> None:
         with pytest.raises(AssertionError):
             assert_never(x)  # type: ignore[arg-type]
 
-    if x is E.a:
+    if x is E.a:  # noqa: SIM114
         pass
     elif x is E.b:
         pass
@@ -184,7 +184,7 @@ def test_assert_never_literal() -> None:
         with pytest.raises(AssertionError):
             assert_never(x)  # type: ignore[arg-type]
 
-    if x == "a":
+    if x == "a":  # noqa: SIM114
         pass
     elif x == "b":
         pass

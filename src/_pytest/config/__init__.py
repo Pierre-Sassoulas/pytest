@@ -1556,9 +1556,7 @@ class Config:
                 missing_plugins.append(required_plugin)
                 continue
 
-            if req.name not in plugin_dist_info:
-                missing_plugins.append(required_plugin)
-            elif not req.specifier.contains(
+            if req.name not in plugin_dist_info or not req.specifier.contains(
                 Version(plugin_dist_info[req.name]), prereleases=True
             ):
                 missing_plugins.append(required_plugin)

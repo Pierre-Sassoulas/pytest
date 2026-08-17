@@ -207,7 +207,6 @@ lint.ignore = [
     "S110", # `try`-`except`-`pass` detected, consider logging the exception
     # flake8-simplify ignore
     "SIM102", # Use a single `if` statement instead of nested `if` statements
-    "SIM114", # Combine `if` branches using logical `or` operator
     "SIM115", # Use a context manager for opening files
     "SIM117", # Use a single `with` statement with multiple contexts instead of nested `with` statements
     # tryceratops ignore

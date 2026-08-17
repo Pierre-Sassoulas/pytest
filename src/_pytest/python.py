@@ -404,13 +404,12 @@ class PyCollector(PyobjMixin, nodes.Collector, abc.ABC):
         """Check if the given name matches the prefix or glob-pattern defined
         in configuration."""
         for option in self.config.getini(option_name):
-            if name.startswith(option):
-                return True
-            # Check that name looks like a glob-string before calling fnmatch
+            # Check that option looks like a glob-string before calling fnmatch
             # because this is called for every name in each collected module,
             # and fnmatch is somewhat expensive to call.
-            elif ("*" in option or "?" in option or "[" in option) and fnmatch.fnmatch(
-                name, option
+            if name.startswith(option) or (
+                ("*" in option or "?" in option or "[" in option)
+                and fnmatch.fnmatch(name, option)
             ):
                 return True
         return False
