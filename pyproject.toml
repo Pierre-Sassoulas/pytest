@@ -179,6 +179,8 @@ lint.ignore = [
     # f-string full of escaped newlines would hide.
     "FLY002", # Consider an f-string instead of string join
     # flake8-implicit-str-concat ignore
+    # One long expected message wrapped over two lines in a list of expected
+    # lines is unambiguous; the parentheses would only add nesting.
     "ISC004", # Unparenthesized implicit string concatenation in collection
     # flake8-logging ignore
     "LOG015", # Call on root logger
